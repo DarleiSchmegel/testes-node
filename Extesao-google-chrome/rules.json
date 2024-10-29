@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*://*.doubleclick.net/*",
+            "domains": [
+                "youtube.com"
+            ],
+            "resourceTypes": [
+                "sub_frame"
+            ]
+        }
+    },
+    {
+        "id": 2,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*://*.googleadservices.com/*",
+            "domains": [
+                "youtube.com"
+            ],
+            "resourceTypes": [
+                "sub_frame"
+            ]
+        }
+    }
+]

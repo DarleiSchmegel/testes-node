@@ -1,4 +1,5 @@
 import ServerlessClient from "serverless-postgres";
+import fetch from "node-fetch";
 
 // Initialize the database.
 const client = new ServerlessClient({
@@ -16,6 +17,18 @@ const client = new ServerlessClient({
 
 export const handler = async (event) => {
   try {
+    const notifyPaymentReceived = await fetch(
+      "https://backend-geb-flow-development-49551b9c987d.herokuapp.com/tickets-order/notify-payment-received/bb3c8b54-73b4-4750-852d-c531886adcd7",
+      // "https://localhost:3000/tickets-order/notify-payment-received/bb3c8b54-73b4-4750-852d-c531886adcd7",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + process.env.API_AUTHORIZATION_KEY,
+        },
+      }
+    );
+    console.log("notifyPaymentReceived", notifyPaymentReceived);
     // Verifica se o evento contém informações da API Gateway
     if (event.httpMethod && event.headers) {
       const httpMethod = event.httpMethod;
@@ -101,6 +114,22 @@ export const handler = async (event) => {
           // Se chegou até aqui, é porque o status do pagamento foi atualizado, podemos encerrar
           //a conecção com o banco e pode ser retornado uma resposta de sucesso para o Asaas
           await client.clean();
+
+          // fazer uma requisição para http://localhost:3000/tickets-order/notify-payment-received/${ticketsOrderId.rows[0].id}
+          // para notificar o sistema que o pagamento foi recebido
+          const notifyPaymentReceived = fetch(
+            process.env.RESP_API_URL +
+              `/tickets-order/notify-payment-received/${ticketsOrderId.rows[0].id}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + process.env.API_AUTHORIZATION_KEY,
+              },
+            }
+          );
+          console.log("notifyPaymentReceived", notifyPaymentReceived);
+
           const response = {
             statusCode: 200,
             body: JSON.stringify({
@@ -159,3 +188,60 @@ export const handler = async (event) => {
     };
   }
 };
+
+handler({
+  event: "PAYMENT_RECEIVED",
+  payment: {
+    object: "payment",
+    id: "pay_yw27463qxrkiwkuh",
+    dateCreated: "2024-01-26",
+    customer: "cus_000005413810",
+    paymentLink: null,
+    value: 200,
+    netValue: 198.01,
+    originalValue: null,
+    interestValue: null,
+    description: "Teste PIX aws",
+    billingType: "PIX",
+    confirmedDate: "2024-01-26",
+    pixTransaction: "90e39ad9-27c7-4284-8d90-612d16761d20",
+    pixQrCodeId: "DARLEIMA00000000449698ASA",
+    status: "RECEIVED",
+    dueDate: "2024-01-27",
+    originalDueDate: "2024-01-27",
+    paymentDate: "2024-01-26",
+    clientPaymentDate: "2024-01-26",
+    installmentNumber: null,
+    invoiceUrl: "https://sandbox.asaas.com/i/yw27463qxrkiwkuh",
+    invoiceNumber: "04985308",
+    externalReference: null,
+    deleted: false,
+    anticipated: false,
+    anticipable: false,
+    creditDate: "2024-01-26",
+    estimatedCreditDate: "2024-01-26",
+    transactionReceiptUrl:
+      "https://sandbox.asaas.com/comprovantes/4402084495912120",
+    nossoNumero: null,
+    bankSlipUrl: null,
+    lastInvoiceViewedDate: null,
+    lastBankSlipViewedDate: null,
+    discount: {
+      value: 0,
+      limitDate: null,
+      dueDateLimitDays: 0,
+      type: "PERCENTAGE",
+    },
+    fine: {
+      value: 0,
+      type: "PERCENTAGE",
+    },
+    interest: {
+      value: 0,
+      type: "PERCENTAGE",
+    },
+    postalService: false,
+    custody: null,
+    refunds: null,
+  },
+});

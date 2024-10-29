@@ -1,9 +1,11 @@
 {
   "dependencies": {
     "crypto": "^1.0.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.1",
     "jsencrypt": "^3.3.2",
     "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.5.46",
     "qrcode": "^1.5.3",
     "react-native-rsa-native": "^2.0.5",
     "serverless-postgres": "^2.1.0"

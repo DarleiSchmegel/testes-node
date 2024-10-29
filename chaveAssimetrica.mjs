@@ -1,8 +1,7 @@
 import { readFileSync, writeFileSync } from "fs";
 import QRCode from "qrcode";
 import crypto from "crypto";
-import pkg from "react-native-rsa-native";
-const { RSA } = pkg;
+
 // Gera um par de chaves
 const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -10,9 +9,9 @@ const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
 console.log("Chave pública:", publicKey);
 
 //exporta a chave pública e privada
-const publicKeyPen = publicKey.export({ type: "spki", format: "pem" });
+const publicKeyPen = publicKey.export({ type: "pkcs1", format: "pem" });
 // exporta a chave privada
-const privateKeyPen = privateKey.export({ type: "pkcs8", format: "pem" });
+const privateKeyPen = privateKey.export({ type: "pkcs1", format: "pem" });
 
 // gerar arquivo com chave publica
 writeFileSync("public.pem", publicKeyPen);
@@ -35,10 +34,10 @@ const base64Message = encryptedMessage.toString("base64");
 
 console.log("Mensagem criptografada em base64:", base64Message);
 
-// Descriptografa a mensagem
-const decryptedMessage = RSA.decrypt(base64Message, privateKeyPen);
+// // Descriptografa a mensagem
+// const decryptedMessage = RSA.decrypt(base64Message, privateKeyPen);
 
-console.log("Mensagem descriptografada:", JSON.parse(decryptedMessage));
+// console.log("Mensagem descriptografada:", JSON.parse(decryptedMessage));
 
 // Gera a URL de dados do QR Code
 const dataUrl = await QRCode.toDataURL(base64Message);
